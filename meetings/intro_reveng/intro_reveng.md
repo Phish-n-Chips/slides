@@ -181,19 +181,23 @@ A stack frame contains information about the active function in the program. It 
 # Structure of the stack frame
 
 ```text
-|---------------|
-|     arg 2     | Second argument
-|---------------| 
-|     arg 1     | First argument
-|---------------| 
-|     var 1     | Local variable
-|---------------|
-|      EBP      | Saved base pointer (optional)
-|---------------|
-|      RET      | Saved return address
-|---------------|
+|---------------| <- current ESP
+|     var 1     | Local variables of F ([ebp-4])
+|---------------| <- current EBP
+|   next EBP    | Saved base pointer (optional) -+ [ebp]
+|---------------|                                |
+|      RET      | Saved return address (in G)    | [ebp+4]
+|---------------|                                |
+|     arg 1     | First argument (to F)          | [ebp+8]
+|---------------|                                |
+|     arg 2     | Second argument (to F)         | [ebp+12]
+|---------------|                                |
+| caller's var1 | Caller (G)'s local variable    |
+|---------------| <-(caller's EBP)---------------+
+|      ...      |
 
 ```
+
 ---
 
 # The `x86` Instruction Set
