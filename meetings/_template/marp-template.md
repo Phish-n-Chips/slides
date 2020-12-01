@@ -100,7 +100,8 @@ def main():
 
 These slides are licensed under Create Commons
 Attribution 4.0 International License (CC-BY 4.0)
-<img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg" width="400" alt="CC-BY License" /><!-- see https://creativecommons.org/about/downloads/ for logo -->
+![width:400px CC-BY License](https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg)
+<!-- see https://creativecommons.org/about/downloads/ for logo -->
 
 Created/Modified by:
 - @@@ 20XX: PUT YOUR NAME HERE @@@

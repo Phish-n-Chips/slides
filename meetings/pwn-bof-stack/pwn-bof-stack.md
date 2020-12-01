@@ -7,13 +7,15 @@ footer: Phish'n'Chips Team, CC-BY 4.0
 style: |
     section {
         font-family: Oxygen, Roboto, Ubuntu, "Open Sans", "FreeSans", sans-serif;
-    }
-    section:not(.invert) {
+        background-position: 0% 100%;
+        background-repeat: no-repeat;
+        background-size: 200px;
         justify-content: flex-start;
+        background-image: url('../_template/style/pnc_logo_typeA_normal_alpha.svg');
     }
     section::after {
         right: 0; bottom: 0; width: 80px; height: 80px; padding: 30px;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 1 1" width="1" height="1"><path d="M0 1h1v-1Z" fill="rgba(0,0,0,0.05)"/></svg>') no-repeat center center;
+        background: url('../_template/style/pagenum-bg.svg') no-repeat center center;
         font-size: 30px;
         text-align: right;
         display: flex;
@@ -22,17 +24,22 @@ style: |
         background-size: cover;
     }
     section.invert {
+        background-image: url('../_template/style/pnc_logo_typeA_invert_alpha.svg');
+    }
+    section.title {
+        background-position: 0% 0%;
+        background-size: 500px;
+    }
+    section.title, section.invert {
+        justify-content: center;
         text-align: center;
         font-size: 250%;
     }
-    section.handson {
-        background: #dff;
+    section.title::after, section.invert::after {
+        display: none;
     }
     ul,ol {
         text-align: left;
-    }
-    section.invert::after {
-        display: none;
     }
     footer {
         left: 70pt;
@@ -47,8 +54,11 @@ style: |
         font-style: normal;
         font-weight: bold;
     }
+    section.handson {
+        background-color: #dff;
+    }
 ---
-<!-- _class: invert -->
+<!-- _class: invert title -->
 
 # Exploit / Stack Buffer Overflow
 
@@ -978,7 +988,8 @@ Questions? :slightly_smiling_face:
 
 These slides are licensed under Create Commons
 Attribution 4.0 International License (CC-BY 4.0)
-<img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg" width="400" alt="CC-BY License" /><!-- see https://creativecommons.org/about/downloads/ for logo -->
+![width:400px CC-BY License](https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg)
+<!-- see https://creativecommons.org/about/downloads/ for logo -->
 
 Created/Modified by:
 - 2020: Fukutomo Nakanishi
