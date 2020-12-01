@@ -115,11 +115,11 @@ There is no problem if we don't understand them now - let's learn one by one :sl
 
 ## Exploitation techniques and defenses
 
-Basic techniques
+Basic major techniques
 
-- Attack vector (How attackers can take advantage of vulnerability?)
-    - Buffer overflow (stack buffer overflow, heap overflow)
-    - Format string attack
+- Attack surface (What vulnerability can attackers take advantage of?)
+    - Buffer overflow (stack buffer overflow [CWE-121](https://cwe.mitre.org/data/definitions/121.html), heap overflow [CWE-122](https://cwe.mitre.org/data/definitions/122.html))
+    - Format string vulnerability [CWE-134](https://cwe.mitre.org/data/definitions/134.html)
 - Code execution (How attackers can achieve their intent?)
     - Important variable overwrite
     - Function pointer overwrite (pointer variable, vtbl, GOT)
@@ -146,11 +146,11 @@ Defense techniques (not exaustive)
 
 ## Exploitation techniques and defenses
 
-The topic we focus on today:
+The topic we focus on this slide deck:
 
-- Attack vector (How attackers can take advantage of vulnerability?)
-    - Buffer overflow (**stack buffer overflow**, heap overflow)
-    - Format string attack
+- Attack surface (What vulnerability can attackers take advantage of?)
+    - Buffer overflow (**stack buffer overflow** [CWE-121](https://cwe.mitre.org/data/definitions/121.html), heap overflow [CWE-122](https://cwe.mitre.org/data/definitions/122.html))
+    - Format string vulnerability [CWE-134](https://cwe.mitre.org/data/definitions/134.html)
 - Code execution (How attackers can achieve their intent?)
     - **Important variable overwrite**
     - **Function pointer overwrite** (**pointer variable**, vtbl, GOT)
@@ -856,7 +856,39 @@ Solve manually-solved challenges with pwntools
 
 ---
 
-## stack buffer overflow - countermeasures
+## stack buffer overflow - history and references
+
+- [Morris Worm](https://en.wikipedia.org/wiki/Morris_worm) (1988)
+    - one of the first major malware samples spread across the Internet
+    - exploits stack buffer overflow vulnerability of finger daemon
+    - Mark W. Eichin, Jon A. Rochis. [With Microscope and Tweezers: An Analysis of the Internet Virus of November 1988](https://course.ece.cmu.edu/~ece845/docs/eichin.pdf), In Proc of IEEE S&P, 1989
+      > The virus hit the finger daemon (`fingerd`) by overflowing a buffer which was allocated on the stack. ... the overflow allowed a fake stack frame to be created, which caused a small piece of code to be executed when the procedure returned.
+
+---
+
+## stack buffer overflow - history and references
+
+- Aleph One (Elias Levy). [Smashing The Stack For Fun And Profit](http://phrack.org/issues/49/14.html). Phrack magazine, issue 49(14), 1996
+- Jonathan Pincus, Brandon Baker. [Beyond stack smashing: recent advances in exploiting buffer overruns](https://people.eecs.berkeley.edu/~daw/teaching/cs261-f07/reading/beyondsmashing.pdf). In [J] IEEE Secur. Priv. 2(4), 2004
+
+---
+
+## stack buffer overflow - securing software
+
+- Secure SDLC (Software Development Life Cycle)
+- Development and testing
+    - Objective: reduce the number of vulnerabilities
+    - Secure coding
+    - Vulnerability testing, for example:
+        - [Source code analysis](https://owasp.org/www-community/Source_Code_Analysis_Tools)
+        - Binary code analysis
+        - [Fuzz testing (Fuzzing)](https://owasp.org/www-community/Fuzzing)
+- Runtime mitigation (explained below)
+    - Objective: make potential vulnerabilities hard to exploit
+
+---
+
+## stack buffer overflow - runtime mitigation
 
 <div class=twocolumn>
 
@@ -882,7 +914,7 @@ Solve manually-solved challenges with pwntools
 
 ---
 
-## stack buffer overflow - countermeasures
+## stack buffer overflow - runtime mitigation
 
 <div>
 
@@ -897,7 +929,7 @@ Solve manually-solved challenges with pwntools
 
 ---
 
-## stack buffer overflow - countermeasures
+## stack buffer overflow - runtime mitigation
 
 Inspect which countermeasures are used by pwntools
 
