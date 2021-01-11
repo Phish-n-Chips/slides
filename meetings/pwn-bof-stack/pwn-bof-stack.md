@@ -5,8 +5,9 @@ theme: default
 paginate: true
 footer: Phish'n'Chips Team, CC-BY 4.0
 style: |
+    @import url(https://fonts.googleapis.com/css2?family=Oxygen&display=swap);
     section {
-        font-family: Oxygen, Roboto, Ubuntu, "Open Sans", "FreeSans", sans-serif;
+        font-family: Oxygen, sans-serif;
         background-position: 0% 100%;
         background-repeat: no-repeat;
         background-size: 200px;

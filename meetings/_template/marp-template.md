@@ -5,8 +5,9 @@ theme: default
 paginate: true
 footer: Phish'n'Chips Team, CC-BY 4.0
 style: |
+    @import url('https://fonts.googleapis.com/css?family=Lato:400,900|Roboto+Mono:400,700&display=swap');
     section {
-        font-family: Oxygen, Roboto, Ubuntu, "Open Sans", "FreeSans", sans-serif;
+        font-family: Lato, sans-serif;
         background-position: 0% 100%;
         background-repeat: no-repeat;
         background-size: 200px;
@@ -40,6 +41,9 @@ style: |
     }
     ul,ol {
         text-align: left;
+    }
+    code {
+        font-family: "Roboto Mono", monospace;
     }
     footer {
         left: 70pt;
