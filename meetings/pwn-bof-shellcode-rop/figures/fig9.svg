@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<svg 
+    xmlns='http://www.w3.org/2000/svg'
+    width='740'
+    height='294'
+    shape-rendering='geometricPrecision'
+    version='1.0'>
+  <defs>
+    <filter id='f2' x='0' y='0' width='200%' height='200%'>
+      <feOffset result='offOut' in='SourceGraphic' dx='5' dy='5' />
+      <feGaussianBlur result='blurOut' in='offOut' stdDeviation='3' />
+      <feBlend in='SourceGraphic' in2='blurOut' mode='normal' />
+    </filter>
+  </defs>
+  <g stroke-width='1' stroke-linecap='square' stroke-linejoin='round'>
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M685.0 105.0 L575.0 105.0 L575.0 175.0 L685.0 175.0 z' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M25.0 35.0 L25.0 61.0 L185.0 61.0 L185.0 35.0 z' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M185.0 233.0 L185.0 259.0 L25.0 259.0 L25.0 233.0 z' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M185.0 65.0 L185.0 89.0 L25.0 89.0 L25.0 65.0 z' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M185.0 93.0 L185.0 117.0 L25.0 117.0 L25.0 93.0 z' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M185.0 121.0 L185.0 145.0 L25.0 145.0 L25.0 121.0 z' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M185.0 149.0 L185.0 173.0 L25.0 173.0 L25.0 149.0 z' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M185.0 177.0 L185.0 201.0 L25.0 201.0 L25.0 177.0 z' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M185.0 205.0 L185.0 229.0 L25.0 229.0 L25.0 205.0 z' />
+    <path stroke='none' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='#000000' d='M50.0 42.0 L60.0 49.0 L50.0 56.0 z' />
+    <path stroke='none' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='#000000' d='M50.0 70.0 L60.0 77.0 L50.0 84.0 z' />
+    <path stroke='none' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='#000000' d='M50.0 98.0 L60.0 105.0 L50.0 112.0 z' />
+    <path stroke='none' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='#000000' d='M550.0 98.0 L560.0 105.0 L550.0 112.0 z' />
+    <path stroke='none' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='#000000' d='M50.0 126.0 L60.0 133.0 L50.0 140.0 z' />
+    <path stroke='none' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='#000000' d='M50.0 182.0 L60.0 189.0 L50.0 196.0 z' />
+    <path stroke='none' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='#000000' d='M50.0 238.0 L60.0 245.0 L50.0 252.0 z' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='none' d='M40.0 49.0 L55.0 49.0 ' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='none' d='M40.0 133.0 L55.0 133.0 ' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='none' d='M40.0 105.0 L55.0 105.0 ' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='none' d='M40.0 77.0 L55.0 77.0 ' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='none' d='M40.0 189.0 L55.0 189.0 ' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='none' d='M40.0 245.0 L55.0 245.0 ' />
+    <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='none' d='M540.0 105.0 L555.0 105.0 ' />
+    <text x='81' y='110' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA["flag.txt"]]></text>
+    <text x='72' y='138' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[buf]]></text>
+    <text x='79' y='194' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[print_data]]></text>
+    <text x='51' y='222' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[(next return)]]></text>
+    <text x='76' y='82' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[discard3]]></text>
+    <text x='80' y='54' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[read_file]]></text>
+    <text x='256' y='250' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[(print_data arg1)]]></text>
+    <text x='40' y='166' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[1024]]></text>
+    <text x='239' y='82' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[discard 3 stack elements and jump to next function]]></text>
+    <text x='257' y='138' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[(read_file arg2)]]></text>
+    <text x='257' y='166' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[(read_file arg3)]]></text>
+    <text x='218' y='194' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[call print_data]]></text>
+    <text x='246' y='222' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[next instruction to be executed after this ROP chain]]></text>
+    <text x='219' y='54' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[call read_file]]></text>
+    <text x='72' y='250' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[buf]]></text>
+    <text x='257' y='110' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[(read_file arg1)]]></text>
+    <text x='456' y='110' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[discard3]]></text>
+    <text x='590' y='124' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[pop esi]]></text>
+    <text x='590' y='138' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[pop edi]]></text>
+    <text x='590' y='152' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[pop ebp]]></text>
+    <text x='593' y='166' font-family='monospace' font-size='15' stroke='none' fill='#000000' ><![CDATA[ret]]></text>
+  </g>
+</svg>

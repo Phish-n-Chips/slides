@@ -1,0 +1,13 @@
++-----------------------+
+| -> set rdi gadget     |  -> pop rdi; ret
++-----------------------+
+| arg1                  |  (stored in rdi)
++-----------------------+
+| -> alternative gadget |  -> pop rsi; pop r15; ret
++-----------------------+
+| arg2                  |  (stored in rsi)
++-----------------------+
+| (dummy)               |  (stored in r15)
++-----------------------+
+| -> func               |  call func after setting args
++-----------------------+

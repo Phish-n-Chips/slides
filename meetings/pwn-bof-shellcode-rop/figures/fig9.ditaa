@@ -1,0 +1,17 @@
++---------------+
+| -> read_file  | call read_file
++---------------+
+| -> discard3   | discard 3 stack elements and jump to next function
++---------------+
+| -> "flag.txt" |     (read_file arg1)     discard3 -> +----------+
++---------------+                                      | pop esi  |
+| -> buf        |     (read_file arg2)                 | pop edi  |
++---------------+                                      | pop ebp  |
+| 1024          |     (read_file arg3)                 | ret      |
++---------------+                                      +----------+
+| -> print_data | call print_data
++---------------+
+| (next return) | next instruction to be executed after this ROP chain
++---------------+
+| -> buf        |     (print_data arg1)
++---------------+

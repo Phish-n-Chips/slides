@@ -13,7 +13,6 @@
     </filter>
   </defs>
   <g stroke-width='1' stroke-linecap='square' stroke-linejoin='round'>
-    <rect x='0' y='0' width='380' height='210' style='fill: #ffffff'/>
     <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M25.0 35.0 L25.0 61.0 L165.0 61.0 L165.0 35.0 z' />
     <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M165.0 149.0 L165.0 175.0 L25.0 175.0 L25.0 149.0 z' />
     <path stroke='#000000' stroke-width='1.000000' stroke-linecap='round' stroke-linejoin='round' fill='white' d='M165.0 65.0 L165.0 89.0 L25.0 89.0 L25.0 65.0 z' />
