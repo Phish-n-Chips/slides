@@ -1,0 +1,13 @@
++---------------------+                               +---------------------+
+| -> set rdi gadget   |  -> pop rdi; ret              | -> set rdi gadget   |  -> pop rdi; ret
++---------------------+                               +---------------------+
+| buf                 |  set arg1                     | buf                 |  set arg1
++---------------------+                               +---------------------+
+| -> set rsi gadget   |  -> pop rsi; pop r15; ret     | -> run_shell        |  call func
++---------------------+                               +---------------------+
+| flag_filename       |  set arg2
++---------------------+                    0x400661 -> /---------\  0x400663 -> /---------\
+| (dummy)             |  (stored in r15)               | pop rsi |              | pop rdi |
++---------------------+                                | pop r15 |              | ret     |
+| -> make_cat_command |  call func                     | ret     |              \---------/
++---------------------+                                \---------/

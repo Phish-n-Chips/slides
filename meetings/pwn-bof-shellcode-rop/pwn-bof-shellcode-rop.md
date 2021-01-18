@@ -420,7 +420,7 @@ STACK  +-------------------------+ read() 2nd    |
 
 ## :memo: hands-on (3): stack overflow & shellcode (x86-**64**) (`chal3`)
 
-Let's write script using `pwntools` to 
+Let's write script using `pwntools` to execute `/bin/sh` with stack-based buffer overflow and shellcode.
 
 <div class=twocolumn>
 
@@ -546,7 +546,6 @@ jump to a function address, but also **specifying its arguments** on the stack
 <div class=twocolumn>
 
 Basic attack
-
 <img height=300 src="./figures/fig4.svg">
 <!--
 ```
@@ -565,7 +564,6 @@ Basic attack
 -->
 
 Return to libc
-
 <img height=300 src="./figures/fig5.svg">
 <!--
 ```
@@ -1037,6 +1035,8 @@ Hint:
    0x0000000000400661 : pop rsi ; pop r15 ; ret
    ```
 3. Convert each call into ROP form
+  <img src="./figures/fig13.svg">
+  <!--
    ```text
    +---------------------+                               +---------------------+
    | -> set rdi gadget   |  -> pop rdi; ret              | -> set rdi gadget   |  -> pop rdi; ret
@@ -1052,7 +1052,10 @@ Hint:
    | -> make_cat_command |  call func                     | ret     |              \---------/
    +---------------------+                                \---------/
    ```
+   -->
 4. Combine the calls to generate a ROP chain.
+  <img src="./figures/fig14.svg">
+  <!--
    ```text
    +---------------------+
    | -> set rdi gadget   |
@@ -1074,6 +1077,7 @@ Hint:
    | -> run_shell        |
    +---------------------+
    ```
+   -->
 
 </div>
 
