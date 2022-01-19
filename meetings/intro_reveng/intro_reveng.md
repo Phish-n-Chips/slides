@@ -14,6 +14,8 @@ _class: invert
 
 # <!--fit-->Introduction to Reverse Engineering
 
+![w:346 h:259](img/pnc.png)
+
 Phish 'n' Chips Team
 
 ---
@@ -280,16 +282,19 @@ Since `x86` is a CISC architecture, it has instruction variations that permit op
 
 ---
 
-# Addressing Modes
+# Addressing modes
 
-An addressing mode provides a way to _calculate an address_ the instruction has to operate on
+An addressing mode specifies a rule for interpreting or modifying the address field of the instruction before the operand is actually executed
 
 ---
 
-# Addressing Examples
+# Addressing examples (not exhaustive)
 
-- Register  `mov rax, [rax]`
-- Register + Offset `mov rax, [rax + 0x10]`
+- Implied `nop` 
+- Immediate `mov rax, 0x5` (move `5` into `rax`)
+- Register  `mov rax, rbx` (move `rbx` into `rax`)
+- Indirect Register `mov rax, [rbx]` (move what's pointed by `rbx` into `rax`)
+- Indexed `mov rax, [rax + 0x10]` (displace `rax` by `0x10` and then move its contents into `rax`)
 
 ---
 
@@ -312,21 +317,21 @@ The instructions range from moving values from a register to another to calculat
 
 ---
 
-#  Calling Conventions
+#  ABIs and calling conventions
 
-A calling convention is a scheme that defines how functions receive their parameters and return their result to callers
+An **ABI (Application Binary Interface)** defines how data structures or computational routines are accessed in machine code (low-level counterpart of an API)
 
-Different _instruction set architectures (ISA)_ use different calling conventions
+The ABI also defines a **calling convention** which defines how functions receive their parameters and return their result to callers in machine code
 
 ---
 
-# <!--fit--> `x86` Calling Convention (32-bit)
+# <!--fit--> `x86` Calling convention (32-bit)
 
 Parameters are passed **on the stack** in reverse order. The result is stored in register `EAX`.
 
 ---
 
-# <!--fit--> `x86_64` Calling Convention (64-bit)
+# <!--fit--> `x86_64` Calling convention (64-bit)
 
 Parameters are passed in **registers** and, if more are needed, on the stack. The result is stored in register `RAX`
 
@@ -358,4 +363,4 @@ These slides are licensed under  Attribution 4.0 International (CC BY 4.0)
 
 Modifications by:
 
-* 2020: Giulio De Pasquale (@peperunas)
+* 2020-2022: Giulio De Pasquale (@peperunas)
